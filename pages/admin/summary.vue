@@ -29,46 +29,43 @@
         <button @click="downloadPDF" class="bg-blue-500 text-white px-4 py-2 rounded-md">Download PDF</button>
       </div>
 
-      <table class="min-w-full mt-4 bg-white border border-gray-300">
-        <thead>
-          <tr>
-            <th class="border px-4 py-2">No</th>
-            <th class="border px-4 py-2">Nama Barang</th>
-            <th class="border px-4 py-2">Jumlah Pinjam</th>
-            <th class="border px-4 py-2">Tgl. Pinjam</th>
-            <th class="border px-4 py-2">Tgl. Kembali</th>
-            <th class="border px-4 py-2">Peminjam</th>
-            <th class="border px-4 py-2">Petugas</th>
-            <th class="border px-4 py-2">Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(loan, index) in filteredLoans" :key="index">
-            <td class="border px-4 py-2">{{ index + 1 }}</td>
-            <td class="border px-4 py-2">{{ loan.itemName }}</td>
-            <td class="border px-4 py-2">{{ loan.amount }}</td>
-            <td class="border px-4 py-2">{{ loan.borrowDate }}</td>
-            <td class="border px-4 py-2">{{ loan.returnDate }}</td>
-            <td class="border px-4 py-2">{{ loan.borrower }}</td>
-            <td class="border px-4 py-2">{{ loan.officer }}</td>
-            <td class="border px-4 py-2">
-              <span :class="{'bg-yellow-200': loan.status === 'BORROWED', 'bg-green-200': loan.status === 'RETURNED'}" class="px-2 py-1 rounded">
-                {{ loan.status }}
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div ref="pdfContent" class="mt-6">
+        <table class="min-w-full mt-4 bg-white border border-gray-300">
+          <thead>
+            <tr>
+              <th class="border px-4 py-2">No</th>
+              <th class="border px-4 py-2">Nama Barang</th>
+              <th class="border px-4 py-2">Jumlah Pinjam</th>
+              <th class="border px-4 py-2">Tgl. Pinjam</th>
+              <th class="border px-4 py-2">Tgl. Kembali</th>
+              <th class="border px-4 py-2">Peminjam</th>
+              <th class="border px-4 py-2">Petugas</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(loan, index) in filteredLoans" :key="index">
+              <td class="border px-4 py-2">{{ index + 1 }}</td>
+              <td class="border px-4 py-2">{{ loan.itemName }}</td>
+              <td class="border px-4 py-2">{{ loan.amount }}</td>
+              <td class="border px-4 py-2">{{ loan.borrowDate }}</td>
+              <td class="border px-4 py-2">{{ loan.returnDate }}</td>
+              <td class="border px-4 py-2">{{ loan.borrower }}</td>
+              <td class="border px-4 py-2">{{ loan.officer }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
+import html2pdf from 'html2pdf.js'
 
 const loans = ref([
-  { itemName: 'Laptop Dell XPS', amount: 1, borrowDate: '3/1/2024', returnDate: '3/8/2024', borrower: 'Farand', officer: 'Syela', status: 'BORROWED' },
-  { itemName: 'Proyektor Epson', amount: 1, borrowDate: '3/2/2024', returnDate: '3/9/2024', borrower: 'Veri', officer: 'Radit', status: 'RETURNED' }
+  { itemName: 'Laptop Dell XPS', amount: 1, borrowDate: '3/1/2024', returnDate: '3/8/2024', borrower: 'Farand', officer: 'Syela' },
+  { itemName: 'Proyektor Epson', amount: 1, borrowDate: '3/2/2024', returnDate: '3/9/2024', borrower: 'Veri', officer: 'Radit' }
 ])
 
 const startDate = ref('')
@@ -85,8 +82,16 @@ const filteredLoans = computed(() => {
 });
 
 const downloadPDF = () => {
-  // Implementasi untuk mendownload PDF
-  alert('Download PDF functionality not implemented yet.');
+  const element = document.querySelector('div[ref="pdfContent"]');
+  const opt = {
+    margin:       1,
+    filename:     'Data_Peminjaman.pdf',
+    image:        { type: 'jpeg', quality: 0.98 },
+    html2canvas:  { scale: 2 },
+    jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+  };
+
+  html2pdf().from(element).set(opt).save();
 }
 </script>
 
