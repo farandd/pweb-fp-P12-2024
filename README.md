@@ -1,42 +1,19 @@
-# Nuxt 3 Minimal Starter
+# pweb-FP_P12-2024
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+## Anggota Kelompok
 
-## Setup
+| Nama                      | NRP         |
+| ------------------------- | ----------- |
+| Raditya Hardian Santoso    | 5027231033  |
+| Syela Zeruya Tandi Lalong  | 5027231076  |
+| Farand Febriansyah         | 5027231084  |
 
-Make sure to install the dependencies:
+## Login Credentials
 
-```bash
-# yarn
-yarn install
+- **Login sebagai User:**
+  - Username: `user`
+  - Password: `user123`
 
-# npm
-npm install
-
-# pnpm
-pnpm install
-```
-
-## Development Server
-
-Start the development server on http://localhost:3000
-
-```bash
-npm run dev
-```
-
-## Production
-
-Build the application for production:
-
-```bash
-npm run build
-```
-
-Locally preview production build:
-
-```bash
-npm run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+- **Login sebagai Admin:**
+  - Username: `admin`
+  - Password: `admin123`
