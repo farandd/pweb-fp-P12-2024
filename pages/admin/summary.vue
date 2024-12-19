@@ -1,41 +1,95 @@
 <template>
-  <div class="py-6">
+  <div class="py-12 bg-gray-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="sm:flex sm:items-center">
-        <div class="sm:flex-auto">
-          <h1 class="text-2xl font-semibold text-gray-900">Data Peminjaman</h1>
-        </div>
-        <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-          <Button variant="primary" @click="generatePDF">Cetak PDF</Button>
-        </div>
+      <h2 class="text-3xl font-bold text-gray-900">Data Peminjaman</h2>
+
+      <!-- Navigasi Tab di Atas -->
+      <div class="mt-4">
+        <nav class="flex space-x-4">
+          <NuxtLink to="/admin" class="text-blue-500 hover:underline">Data Barang</NuxtLink>
+          <NuxtLink to="/admin/all-operator" class="text-blue-500 hover:underline">Data Petugas</NuxtLink>
+          <NuxtLink to="/admin/summary" class="text-blue-500 hover:underline">Data Peminjaman</NuxtLink>
+        </nav>
       </div>
 
-      <div class="mt-8">
-        <Table
-          :items="borrowingsStore.borrowings"
-          :columns="columns"
-        />
+      <!-- Filter Tanggal -->
+      <div class="mt-6 flex space-x-4">
+        <div>
+          <label for="startDate" class="block text-sm font-medium text-gray-700">Start Date</label>
+          <input type="date" id="startDate" v-model="startDate" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" />
+        </div>
+        <div>
+          <label for="endDate" class="block text-sm font-medium text-gray-700">End Date</label>
+          <input type="date" id="endDate" v-model="endDate" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" />
+        </div>
+        <div>
+          <label for="searchBorrower" class="block text-sm font-medium text-gray-700">Search Borrower</label>
+          <input type="text" id="searchBorrower" v-model="searchBorrower" placeholder="Enter borrower name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" />
+        </div>
+        <button @click="downloadPDF" class="bg-blue-500 text-white px-4 py-2 rounded-md">Download PDF</button>
       </div>
+
+      <table class="min-w-full mt-4 bg-white border border-gray-300">
+        <thead>
+          <tr>
+            <th class="border px-4 py-2">No</th>
+            <th class="border px-4 py-2">Nama Barang</th>
+            <th class="border px-4 py-2">Jumlah Pinjam</th>
+            <th class="border px-4 py-2">Tgl. Pinjam</th>
+            <th class="border px-4 py-2">Tgl. Kembali</th>
+            <th class="border px-4 py-2">Peminjam</th>
+            <th class="border px-4 py-2">Petugas</th>
+            <th class="border px-4 py-2">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(loan, index) in filteredLoans" :key="index">
+            <td class="border px-4 py-2">{{ index + 1 }}</td>
+            <td class="border px-4 py-2">{{ loan.itemName }}</td>
+            <td class="border px-4 py-2">{{ loan.amount }}</td>
+            <td class="border px-4 py-2">{{ loan.borrowDate }}</td>
+            <td class="border px-4 py-2">{{ loan.returnDate }}</td>
+            <td class="border px-4 py-2">{{ loan.borrower }}</td>
+            <td class="border px-4 py-2">{{ loan.officer }}</td>
+            <td class="border px-4 py-2">
+              <span :class="{'bg-yellow-200': loan.status === 'BORROWED', 'bg-green-200': loan.status === 'RETURNED'}" class="px-2 py-1 rounded">
+                {{ loan.status }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </template>
 
-<script setup lang="ts">
-import { useBorrowingsStore } from '~/stores/borrowings';
-import { generateBorrowingsPDF } from '~/utils/pdf';
+<script setup>
+import { ref, computed } from 'vue'
 
-const borrowingsStore = useBorrowingsStore();
+const loans = ref([
+  { itemName: 'Laptop Dell XPS', amount: 1, borrowDate: '3/1/2024', returnDate: '3/8/2024', borrower: 'Farand', officer: 'Syela', status: 'BORROWED' },
+  { itemName: 'Proyektor Epson', amount: 1, borrowDate: '3/2/2024', returnDate: '3/9/2024', borrower: 'Veri', officer: 'Radit', status: 'RETURNED' }
+])
 
-const columns = [
-  { key: 'item_name', label: 'Nama Barang' },
-  { key: 'amount', label: 'Jumlah Pinjam' },
-  { key: 'borrow_date', label: 'Tgl. Pinjam' },
-  { key: 'return_date', label: 'Tgl. Kembali' },
-  { key: 'borrower_name', label: 'Peminjam' },
-  { key: 'officer_name', label: 'Petugas' },
-];
+const startDate = ref('')
+const endDate = ref('')
+const searchBorrower = ref('')
 
-const generatePDF = () => {
-  generateBorrowingsPDF(borrowingsStore.borrowings);
-};
+const filteredLoans = computed(() => {
+  return loans.value.filter(loan => {
+    const matchesDate = (!startDate.value || new Date(loan.borrowDate) >= new Date(startDate.value)) &&
+                        (!endDate.value || new Date(loan.borrowDate) <= new Date(endDate.value));
+    const matchesBorrower = loan.borrower.toLowerCase().includes(searchBorrower.value.toLowerCase());
+    return matchesDate && matchesBorrower;
+  });
+});
+
+const downloadPDF = () => {
+  // Implementasi untuk mendownload PDF
+  alert('Download PDF functionality not implemented yet.');
+}
 </script>
+
+<style scoped>
+/* Tambahkan gaya tambahan jika diperlukan */
+</style>
