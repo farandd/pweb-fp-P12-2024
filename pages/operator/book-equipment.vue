@@ -1,99 +1,187 @@
 <template>
-  <div>
-    <OperatorNavigation />
-    <div class="py-6">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="sm:flex sm:items-center">
-          <div class="sm:flex-auto">
-            <h1 class="text-2xl font-semibold text-gray-900">Form Peminjaman</h1>
+  <div class="min-h-screen flex flex-col">
+    <main class="flex-grow container mx-auto mt-8">
+      <!-- Navigasi -->
+      <div>
+        <nav class="flex space-x-4 border-b">
+          <NuxtLink
+            to="/operator/book-equipment"
+            class="px-4 py-2 text-gray-700"
+            active-class="text-blue-500 border-b-2 border-blue-500"
+          >
+            Form Peminjaman
+          </NuxtLink>
+          <NuxtLink
+            to="/operator/equipment"
+            class="px-4 py-2 text-gray-700"
+            active-class="text-blue-500 border-b-2 border-blue-500"
+          >
+            Data Barang
+          </NuxtLink>
+          <NuxtLink
+            to="/operator/borrowers"
+            class="px-4 py-2 text-gray-700"
+            active-class="text-blue-500 border-b-2 border-blue-500"
+          >
+            Data Peminjam
+          </NuxtLink>
+        </nav>
+      </div>
+
+      <!-- Form Peminjaman -->
+      <div class="py-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="sm:flex sm:items-center">
+            <div class="sm:flex-auto">
+              <h1 class="text-3xl font-bold text-gray-900">Form Peminjaman</h1>
+            </div>
+          </div>
+
+          <div class="mt-8">
+            <form @submit.prevent="handleSubmit" class="space-y-6 max-w-2xl">
+              <div>
+                <label class="block text-sm font-medium text-gray-700">
+                  Nama Barang
+                </label>
+                <select
+                  v-model="form.item_name"
+                  required
+                  class="mt-1 block w-full h-10 px-4 py-2 rounded-md border-2 border-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-base"
+                >
+                  <option value="">Pilih Barang</option>
+                  <option
+                    v-for="item in itemsStore.items"
+                    :key="item.name"
+                    :value="item.name"
+                  >
+                    {{ item.name }}
+                  </option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700">
+                  Jumlah Pinjam
+                </label>
+                <input
+                  v-model="form.amount"
+                  type="number"
+                  required
+                  min="1"
+                  class="mt-1 block w-full h-10 px-4 py-2 rounded-md border-2 border-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-base"
+                />
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700">
+                  Tanggal Pengembalian
+                </label>
+                <input
+                  v-model="form.return_date"
+                  type="date"
+                  required
+                  class="mt-1 block w-full h-10 px-4 py-2 rounded-md border-2 border-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-base"
+                />
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700">
+                  Nama Peminjam
+                </label>
+                <input
+                  v-model="form.borrower_name"
+                  type="text"
+                  required
+                  class="mt-1 block w-full h-10 px-4 py-2 rounded-md border-2 border-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-base"
+                />
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700">
+                  Nama Petugas
+                </label>
+                <select
+                  v-model="form.officer_name"
+                  required
+                  class="mt-1 block w-full h-10 px-4 py-2 rounded-md border-2 border-gray-400 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-base"
+                >
+                  <option value="">Pilih Petugas</option>
+                  <option
+                    v-for="operator in operators"
+                    :key="operator.username"
+                    :value="operator.name"
+                  >
+                    {{ operator.name }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="flex justify-end">
+                <button
+                  type="submit"
+                  class="bg-blue-500 text-white px-5 py-2 rounded-md hover:bg-blue-600 shadow-md"
+                >
+                  Submit
+                </button>
+              </div>
+            </form>
           </div>
         </div>
-
-        <div class="mt-8">
-          <form @submit.prevent="handleSubmit" class="space-y-6 max-w-2xl">
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Nama Barang</label>
-              <select
-                v-model="form.item_name"
-                required
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              >
-                <option value="">Pilih Barang</option>
-                <option v-for="item in itemsStore.items" :key="item.name" :value="item.name">
-                  {{ item.name }}
-                </option>
-              </select>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Jumlah Pinjam</label>
-              <input
-                v-model="form.amount"
-                type="number"
-                required
-                min="1"
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              />
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Tanggal Pengembalian</label>
-              <input
-                v-model="form.return_date"
-                type="date"
-                required
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              />
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Nama Peminjam</label>
-              <input
-                v-model="form.borrower_name"
-                type="text"
-                required
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              />
-            </div>
-
-            <div class="flex justify-end">
-              <Button variant="primary" type="submit">Submit</Button>
-            </div>
-          </form>
-        </div>
       </div>
-    </div>
+    </main>
   </div>
 </template>
 
-<script setup lang="ts">
-import { useItemsStore } from '~/stores/items';
-import { useBorrowingsStore } from '~/stores/borrowings';
-import { useAuthStore } from '~/stores/auth';
+<script setup>
+import { ref, onMounted } from "vue";
+import { useItemsStore } from "~/stores/items";
+import { useBorrowingsStore } from "~/stores/borrowings";
+
+// Data petugas diambil dari LocalStorage
+const operators = ref([]);
+
+// Fungsi untuk memuat data operator dari LocalStorage
+const loadOperatorsFromLocalStorage = () => {
+  const storedOperators = localStorage.getItem("operators");
+  if (storedOperators) {
+    operators.value = JSON.parse(storedOperators);
+  }
+};
 
 const itemsStore = useItemsStore();
 const borrowingsStore = useBorrowingsStore();
-const authStore = useAuthStore();
 
 const form = ref({
-  item_name: '',
-  amount: '',
-  return_date: '',
-  borrower_name: '',
+  item_name: "",
+  amount: "",
+  return_date: "",
+  borrower_name: "",
+  officer_name: "", // Menambahkan field untuk Nama Petugas
 });
 
 const handleSubmit = () => {
   borrowingsStore.addBorrowing({
     ...form.value,
     borrow_date: new Date(),
-    officer_name: authStore.user?.username || '',
   });
 
   form.value = {
-    item_name: '',
-    amount: '',
-    return_date: '',
-    borrower_name: '',
+    item_name: "",
+    amount: "",
+    return_date: "",
+    borrower_name: "",
+    officer_name: "",
   };
 };
+
+// Memuat data petugas saat halaman di-mount
+onMounted(() => {
+  loadOperatorsFromLocalStorage();
+});
 </script>
+
+<style scoped>
+body {
+  font-family: Arial, sans-serif;
+}
+</style>

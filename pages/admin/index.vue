@@ -1,20 +1,42 @@
 <template>
-  <div class="py-12 bg-gray-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="text-3xl font-bold text-gray-900">Data Barang</h2>
-
-      <!-- Navigasi Tab di Atas -->
-      <div class="mt-4">
-        <nav class="flex space-x-4">
-          <NuxtLink to="/admin" class="text-blue-500 hover:underline">Data Barang</NuxtLink>
-          <NuxtLink to="/admin/all-operator" class="text-blue-500 hover:underline">Data Petugas</NuxtLink>
-          <NuxtLink to="/admin/summary" class="text-blue-500 hover:underline">Data Peminjaman</NuxtLink>
+  <div class="min-h-screen flex flex-col">
+    <main class="flex-grow container mx-auto mt-8">
+      <!-- Navigasi -->
+      <div>
+        <nav class="flex space-x-4 border-b">
+          <NuxtLink
+            to="/admin"
+            class="px-4 py-2 text-gray-700"
+            active-class="text-blue-500 border-b-2 border-blue-500"
+          >
+            Data Barang
+          </NuxtLink>
+          <NuxtLink
+            to="/admin/all-operator"
+            class="px-4 py-2 text-gray-700"
+            active-class="text-blue-500 border-b-2 border-blue-500"
+          >
+            Data Petugas
+          </NuxtLink>
+          <NuxtLink
+            to="/admin/summary"
+            class="px-4 py-2 text-gray-700"
+            active-class="text-blue-500 border-b-2 border-blue-500"
+          >
+            Data Peminjaman
+          </NuxtLink>
         </nav>
       </div>
 
+      <h2 class="text-3xl font-bold mt-6">Data Barang</h2>
       <div class="mt-6 flex justify-between items-center">
         <h3 class="text-xl font-semibold">List Barang</h3>
-        <button @click="showAddItemModal" class="bg-blue-500 text-white px-4 py-2 rounded-md">+ Tambah Barang</button>
+        <button
+          @click="showAddItemModal"
+          class="bg-blue-500 text-white px-4 py-2 rounded-md"
+        >
+          + Tambah Barang
+        </button>
       </div>
 
       <table class="min-w-full mt-4 bg-white border border-gray-300">
@@ -34,104 +56,81 @@
             <td class="border px-4 py-2">{{ item.name }}</td>
             <td class="border px-4 py-2">{{ item.amount }}</td>
             <td class="border px-4 py-2">{{ item.condition }}</td>
-            <td class="border px-4 py-2">{{ new Date(item.created_at).toLocaleDateString() }}</td>
             <td class="border px-4 py-2">
-              <button @click="editItem(index)" class="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600 mr-2">Edit</button>
-              <button @click="deleteItem(index)" class="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600">Delete</button>
+              {{ new Date(item.created_at).toLocaleDateString() }}
+            </td>
+            <td class="border px-4 py-2">
+              <button
+                @click="editItem(index)"
+                class="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600 mr-2"
+              >
+                Edit
+              </button>
+              <button
+                @click="deleteItem(index)"
+                class="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600"
+              >
+                Delete
+              </button>
             </td>
           </tr>
         </tbody>
       </table>
-
-      <!-- Modal untuk menambah/edit barang -->
-      <div v-if="isModalOpen" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-        <div class="bg-white p-6 rounded-lg shadow-lg w-1/3">
-          <h3 class="text-lg font-semibold">{{ isEditing ? 'Edit Barang' : 'Tambah Barang' }}</h3>
-          <form @submit.prevent="isEditing ? updateItem() : addItem()">
-            <div class="mb-4">
-              <label for="itemName" class="block text-sm font-medium text-gray-700">Nama Barang</label>
-              <input type="text" id="itemName" v-model="itemName" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" />
-            </div>
-            <div class="mb-4">
-              <label for="itemQuantity" class="block text-sm font-medium text-gray-700">Jumlah</label>
-              <input type="number" id="itemQuantity" v-model="itemQuantity" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" />
-            </div>
-            <div class="mb-4">
-              <label for="itemCondition" class="block text-sm font-medium text-gray-700">Kondisi</label>
-              <input type="text" id="itemCondition" v-model="itemCondition" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" />
-            </div>
-            <div class="flex justify-end">
-              <button type="button" @click="closeModal" class="mr-2 text-gray-500 hover:underline">Cancel</button>
-              <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-md">{{ isEditing ? 'Update' : 'Add' }}</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
+    </main>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { DUMMY_ITEMS } from '~/data/dummy/items'
+import { ref } from "vue";
+import { DUMMY_ITEMS } from "~/data/dummy/items";
 
-const items = ref(DUMMY_ITEMS)
-const itemName = ref('')
-const itemQuantity = ref(0)
-const itemCondition = ref('')
-const isModalOpen = ref(false)
-const isEditing = ref(false)
-let editingIndex = ref(null)
+const items = ref(DUMMY_ITEMS);
+const itemName = ref("");
+const itemQuantity = ref(0);
+const itemCondition = ref("");
+const isModalOpen = ref(false);
+const isEditing = ref(false);
+let editingIndex = ref(null);
 
 const showAddItemModal = () => {
-  isModalOpen.value = true
-  isEditing.value = false
-  resetForm()
-}
+  isModalOpen.value = true;
+  isEditing.value = false;
+  resetForm();
+};
 
 const closeModal = () => {
-  isModalOpen.value = false
-}
+  isModalOpen.value = false;
+};
 
 const addItem = () => {
   items.value.push({
     name: itemName.value,
     amount: itemQuantity.value,
     condition: itemCondition.value,
-    created_at: new Date()
-  })
-  closeModal()
-}
+    created_at: new Date(),
+  });
+  closeModal();
+};
 
 const editItem = (index) => {
-  const item = items.value[index]
-  itemName.value = item.name
-  itemQuantity.value = item.amount
-  itemCondition.value = item.condition
-  editingIndex.value = index
-  isModalOpen.value = true
-  isEditing.value = true
-}
-
-const updateItem = () => {
-  items.value[editingIndex.value] = {
-    name: itemName.value,
-    amount: itemQuantity.value,
-    condition: itemCondition.value,
-    created_at: new Date()
-  }
-  closeModal()
-}
+  const item = items.value[index];
+  itemName.value = item.name;
+  itemQuantity.value = item.amount;
+  itemCondition.value = item.condition;
+  editingIndex.value = index;
+  isModalOpen.value = true;
+  isEditing.value = true;
+};
 
 const deleteItem = (index) => {
-  items.value.splice(index, 1) // Hapus item dari daftar
-}
+  items.value.splice(index, 1); // Hapus item dari daftar
+};
 
 const resetForm = () => {
-  itemName.value = ''
-  itemQuantity.value = 0
-  itemCondition.value = ''
-}
+  itemName.value = "";
+  itemQuantity.value = 0;
+  itemCondition.value = "";
+};
 </script>
 
 <style scoped>
