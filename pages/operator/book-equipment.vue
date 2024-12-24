@@ -125,6 +125,10 @@
                 </button>
               </div>
             </form>
+            <!-- Feedback setelah Submit -->
+            <p v-if="submitSuccess" class="text-green-500 mt-4">
+              Data berhasil disubmit!
+            </p>
           </div>
         </div>
       </div>
@@ -159,12 +163,18 @@ const form = ref({
   officer_name: "", // Menambahkan field untuk Nama Petugas
 });
 
+// Menambahkan feedback untuk submit success
+const submitSuccess = ref(false);
+
+// Fungsi untuk menangani submit
 const handleSubmit = () => {
+  // Menambahkan peminjaman ke store
   borrowingsStore.addBorrowing({
     ...form.value,
     borrow_date: new Date(),
   });
 
+  // Reset form dengan cara reaktif
   form.value = {
     item_name: "",
     amount: "",
@@ -172,6 +182,14 @@ const handleSubmit = () => {
     borrower_name: "",
     officer_name: "",
   };
+
+  // Menandakan bahwa submit berhasil
+  submitSuccess.value = true;
+
+  // Reset feedback setelah beberapa detik
+  setTimeout(() => {
+    submitSuccess.value = false;
+  }, 2000); // Reset setelah 2 detik
 };
 
 // Memuat data petugas saat halaman di-mount

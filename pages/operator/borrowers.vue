@@ -34,7 +34,7 @@
         class="p-2 border rounded w-full mb-4 mt-4"
       />
       <table
-        v-if="filteredBorrowings.length"
+        v-if="filteredBorrowings && filteredBorrowings.length"
         class="min-w-full border-collapse border border-gray-300"
       >
         <thead>
@@ -56,7 +56,7 @@
         <tbody>
           <tr
             v-for="(borrow, index) in filteredBorrowings"
-            :key="borrow.item_name"
+            :key="borrow.item_name + index"
           >
             <td class="border px-4 py-2 text-center">{{ index + 1 }}</td>
             <td class="border px-4 py-2">{{ borrow.item_name }}</td>
@@ -101,18 +101,20 @@ export default {
   computed: {
     borrowings() {
       const borrowingsStore = useBorrowingsStore();
-      return borrowingsStore.borrowings;
+      return borrowingsStore.borrowings; // Pastikan ini mengembalikan data yang benar
     },
     filteredBorrowings() {
-      let filtered = this.borrowings.filter(
-        (borrow) =>
-          borrow.item_name
-            .toLowerCase()
-            .includes(this.searchQuery.toLowerCase()) ||
-          borrow.borrower_name
-            .toLowerCase()
-            .includes(this.searchQuery.toLowerCase())
-      );
+      const query = this.searchQuery.trim().toLowerCase();
+      let filtered = this.borrowings;
+
+      if (query) {
+        filtered = filtered.filter(
+          (borrow) =>
+            borrow.item_name.toLowerCase().includes(query) ||
+            borrow.borrower_name.toLowerCase().includes(query) ||
+            borrow.amount.toString().includes(query) // Menambahkan pencarian untuk jumlah pinjam
+        );
+      }
 
       return filtered.sort((a, b) => {
         const aValue = a[this.sortKey];
