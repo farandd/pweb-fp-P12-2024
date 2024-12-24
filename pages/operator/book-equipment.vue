@@ -192,9 +192,21 @@ const handleSubmit = () => {
   }, 2000); // Reset setelah 2 detik
 };
 
-// Memuat data petugas saat halaman di-mount
+// Fungsi untuk menambahkan barang baru
+const addItem = (item) => {
+  // Tambahkan barang baru ke items store
+  itemsStore.items.push(item);
+  localStorage.setItem("items", JSON.stringify(itemsStore.items)); // Simpan ke LocalStorage
+};
+
+// Memuat data petugas dan barang saat halaman di-mount
 onMounted(() => {
   loadOperatorsFromLocalStorage();
+  // Muat data barang dari LocalStorage jika ada
+  const storedItems = localStorage.getItem("items");
+  if (storedItems) {
+    itemsStore.items = JSON.parse(storedItems);
+  }
 });
 </script>
 

@@ -135,9 +135,12 @@
 
 <script setup>
 import { ref } from "vue";
-import { DUMMY_ITEMS } from "~/data/dummy/items";
 
-const items = ref(DUMMY_ITEMS);
+// Ambil data dari LocalStorage jika ada
+const storedItems = JSON.parse(localStorage.getItem("items")) || [];
+
+// Inisialisasi data items dari LocalStorage
+const items = ref(storedItems);
 const itemName = ref("");
 const itemQuantity = ref(0);
 const itemCondition = ref("");
@@ -156,12 +159,15 @@ const closeModal = () => {
 };
 
 const addItem = () => {
-  items.value.push({
+  const newItem = {
     name: itemName.value,
     amount: itemQuantity.value,
     condition: itemCondition.value,
     created_at: new Date(),
-  });
+  };
+
+  items.value.push(newItem);
+  saveItemsToLocalStorage();
   closeModal();
 };
 
@@ -183,17 +189,24 @@ const updateItem = () => {
     created_at: items.value[editingIndex.value].created_at, // keep original date
   };
   items.value[editingIndex.value] = updatedItem;
+  saveItemsToLocalStorage();
   closeModal();
 };
 
 const deleteItem = (index) => {
   items.value.splice(index, 1); // Hapus item dari daftar
+  saveItemsToLocalStorage();
 };
 
 const resetForm = () => {
   itemName.value = "";
   itemQuantity.value = 0;
   itemCondition.value = "";
+};
+
+// Simpan data ke LocalStorage
+const saveItemsToLocalStorage = () => {
+  localStorage.setItem("items", JSON.stringify(items.value));
 };
 </script>
 
