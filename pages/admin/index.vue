@@ -76,6 +76,59 @@
           </tr>
         </tbody>
       </table>
+
+      <!-- Modal Tambah Barang -->
+      <div
+        v-if="isModalOpen"
+        class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50"
+      >
+        <div class="bg-white p-6 rounded-md shadow-lg w-96">
+          <h3 class="text-xl font-semibold mb-4">
+            {{ isEditing ? "Edit Barang" : "Tambah Barang" }}
+          </h3>
+          <div class="mb-4">
+            <label class="block text-gray-700">Nama Barang</label>
+            <input
+              v-model="itemName"
+              type="text"
+              class="w-full border px-4 py-2 rounded-md"
+              placeholder="Masukkan Nama Barang"
+            />
+          </div>
+          <div class="mb-4">
+            <label class="block text-gray-700">Jumlah</label>
+            <input
+              v-model="itemQuantity"
+              type="number"
+              class="w-full border px-4 py-2 rounded-md"
+              placeholder="Masukkan Jumlah"
+            />
+          </div>
+          <div class="mb-4">
+            <label class="block text-gray-700">Kondisi</label>
+            <input
+              v-model="itemCondition"
+              type="text"
+              class="w-full border px-4 py-2 rounded-md"
+              placeholder="Masukkan Kondisi Barang"
+            />
+          </div>
+          <div class="flex justify-between">
+            <button
+              @click="closeModal"
+              class="bg-gray-500 text-white px-4 py-2 rounded-md"
+            >
+              Batal
+            </button>
+            <button
+              @click="isEditing ? updateItem() : addItem()"
+              class="bg-blue-500 text-white px-4 py-2 rounded-md"
+            >
+              {{ isEditing ? "Update" : "Simpan" }}
+            </button>
+          </div>
+        </div>
+      </div>
     </main>
   </div>
 </template>
@@ -120,6 +173,17 @@ const editItem = (index) => {
   editingIndex.value = index;
   isModalOpen.value = true;
   isEditing.value = true;
+};
+
+const updateItem = () => {
+  const updatedItem = {
+    name: itemName.value,
+    amount: itemQuantity.value,
+    condition: itemCondition.value,
+    created_at: items.value[editingIndex.value].created_at, // keep original date
+  };
+  items.value[editingIndex.value] = updatedItem;
+  closeModal();
 };
 
 const deleteItem = (index) => {
